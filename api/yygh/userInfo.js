@@ -7,5 +7,20 @@ export default{
             method: 'post',
             data: loginVo
         })
+    },
+    // 获取用户信息
+    getUserInfo(){
+        return request({
+            url: `/api/user/auth/getUserInfo`,
+            method: 'get'
+        })
+    },
+    //用户认证
+    saveUserAuth(userAuth){
+        return request({
+            url: `/api/user/auth/userAuth`,
+            method: 'post',
+            data: userAuth
+        })
     }
 }

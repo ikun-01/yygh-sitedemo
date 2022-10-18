@@ -93,8 +93,9 @@
 <script>
 import '~/assets/css/hospital_personal.css'
 import '~/assets/css/hospital.css'
-
+import cookie from 'js-cookie'
 import hospitalApi from '@/api/yygh/hospital'
+import userInfoApi from '@/api/yygh/userinfo'
 
 export default {
   data() {
@@ -125,6 +126,23 @@ export default {
       })
     },
     schedule(depcode) {
+      // 点击选择科室,判断是否登录,从cookie中获取token
+      let token = cookie.get('token')  
+      if (!token){
+        // 用户未登录 , 打开登录页面
+        loginEvent.$emit('loginDialogEvent')
+        return
+      }
+
+      userInfoApi.getUserInfo()
+        .then(response => {
+            if(response.data.userInfo.authStatus != 2){
+                // 用户未认证成功 => 跳转到认证页面
+                window.location.href = '/user'
+                return
+            }
+        })
+
       window.location.href = '/hospital/schedule?hoscode=' + this.hoscode + "&depcode="+ depcode
     }
   }

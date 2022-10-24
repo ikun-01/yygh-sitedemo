@@ -122,7 +122,7 @@
                 用户信息
               </div>
               <div class="content-wrapper">
-                <el-form ref="form" :model="form">
+                <el-form ref="form">
                   <el-form-item class="form-item" label="就诊人手机号：">
                     {{ patient.phone }}
                   </el-form-item>

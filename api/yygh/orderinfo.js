@@ -15,5 +15,21 @@ export default {
             url: `${api_path}/auth/getOrders/${orderId}`,
             method: `get`
         })
+    },
+    //当前用户订单列表
+    getPageList(page, limit, searchObj) {
+        return request({
+            url: `${api_path}/auth/${page}/${limit}`,
+            method: `get`,
+            params: searchObj
+        })
+    },
+        
+    //订单状态
+    getStatusList() {
+        return request({
+                url: `${api_path}/auth/getStatusList`,
+                method: 'get'
+        })
     }
 }

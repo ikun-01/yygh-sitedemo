@@ -101,8 +101,8 @@
         <div class="operate-view" style="height: 350px;">
           <div class="wrapper wechat">
             <div>
-              <img src="images/weixin.jpg" alt="">
-              
+              <!-- <img src="images/weixin.jpg" alt=""> -->
+              <qriously :value="payObj.codeUrl" :size="220"/>
               <div style="text-align: center;line-height: 25px;margin-bottom: 40px;">
                 请使用微信扫一扫<br/>
                 扫描二维码支付
@@ -120,6 +120,7 @@ import '~/assets/css/hospital_personal.css'
 import '~/assets/css/hospital.css'
     
 import orderInfoApi from '@/api/yygh/orderinfo'
+import wxApi from '@/api/yygh/wx'
     
 export default {
   data() {
@@ -145,7 +146,49 @@ export default {
       })
     },
     closeDialog(){
-        // 测试提交
+        // 关闭支付窗口
+        if(this.timer){
+          clearInterval(this.timer)
+        }
+    },
+    pay(){
+      this.dialogPayVisible = true
+      wxApi.createNative(this.orderId).then(response => {
+        this.payObj = response.data
+        if(this.payObj.codeUrl === ""){
+          this.dialogPayVisible = false
+          this.$message.console.error("支付错误");
+        } else {
+          // 每三秒去查看 支付状态
+          this.timer = setInterval(() => {
+            this.queryPayStatus(this.orderId)
+          },3000) 
+        }
+      })
+    },
+    queryPayStatus(orderId){
+      wxApi.queryPayStatus(orderId).then(response => {
+        if(response.message === '支付中'){
+          return
+        }else{
+          // 支付成功
+          clearInterval(this.timer) // 清除当前定时器
+          window.location.reload() // 重新加载页面
+        }
+      })
+    },
+    // 取消预约
+    cancelOrder(){
+      this.$confirm('确定取消预约吗?','提示',{
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        return wxApi.cancelOrder(this.orderId)
+      }).then(response => {
+        this.$message.success('取消成功')
+        this.init()
+      })
     }
   }
 }
